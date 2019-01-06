@@ -1,0 +1,233 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
+
+using namespace std;
+
+//   Creating a NODE Structure
+struct node
+{
+    int id;
+    string name;
+    string city;
+    string country;
+    string phone;
+    double contribution;
+    struct node *next;
+};
+
+// Creating a class STACK
+class stack
+{
+
+    public:
+        struct node *top;
+        stack() // constructor
+        {
+            top=NULL;
+        }
+        void push(); // to insert an element
+        void pop();  // to delete an element
+        void show(); // to show the stack
+};
+// PUSH Operation
+void stack::push()
+{
+    int value1;
+    double value2;
+    struct node *ptr;
+
+    cout<<"\nPUSH Operation \n";
+
+    ptr=new node;
+
+    cout<<"Enter a Contributor id to insert: ";
+    cin>>value1;
+    ptr->id=value1;
+
+    // to ignore any escape characters after the int
+    string temp;
+    getline(cin, temp);
+
+    cout<<"Enter Contributor name: ";
+    getline(cin,ptr->name);
+
+    cout<<"Enter Contributor city: ";
+    getline(cin,ptr->city);
+
+    cout<<"Enter Contributor country: ";
+    getline(cin,ptr->country);
+
+    cout<<"Enter Contributor phone: ";
+    getline(cin,ptr->phone);
+
+    cout<<"Enter contribution amount :";
+    cin>>value2;
+    ptr->contribution=value2;
+
+    // set the node's next pointer to NULL
+    ptr->next=NULL;
+
+    if(top!=NULL)
+        ptr->next=top;
+    top=ptr;
+
+    cout<<"\nNew Contributor is inserted to the stack!!!";
+
+}
+
+// POP Operation
+void stack::pop()
+{
+    struct node *temp;
+    if(top==NULL)
+    {
+        cout<<"\nThe stack is empty!!!";
+    }
+
+    temp=top;
+    top=top->next;
+
+    cout<<"\n POP Operation........\n";
+    cout<<" Poped Contributor id is :"<<temp->id << endl;
+
+    delete temp;
+}
+
+// Show stack
+void stack::show()
+{
+    struct node *ptr1=top;
+    if(top==NULL)
+    {
+        cout<<"\nThe stack is empty!!!";
+    }
+    else
+    {
+        int elements=0;
+        cout<<"\n The stack is\n";
+
+        while(ptr1!=NULL)
+        {
+            elements++;
+            cout<<"contributor id : "<< ptr1->id<<endl;
+            cout<<"contributor name : "<< ptr1->name<<endl;
+            cout<<"contributor city : "<< ptr1->city<<endl;
+            cout<<"contributor country : "<< ptr1->country<<endl;
+            cout<<"contributor phone : "<< ptr1->phone<<endl;
+            cout<<"contribution amount: "<< ptr1->contribution<<endl;
+
+            cout<<" -> \n";
+
+            ptr1=ptr1->next;
+        }
+        cout<<" --------------   ----------------"<< endl ;
+        cout<<"total elements in stack : "<< elements <<endl;
+
+    }
+}
+
+// Main function
+int main()
+{
+    cout<<"starts \n" ;
+
+    stack s;
+
+    //readfile
+    fstream file;
+    file.open("contributors.csv");
+    if( !file.is_open())
+    {
+        cout<<"can not read file \n";
+    }
+
+    string line;
+
+    int rows = 0;
+    while (getline( file, line,'\n'))
+	{
+	  istringstream templine(line);
+
+	  string data;
+	  int columns=0;
+
+	  node *ptr=new node;
+
+	  while (getline( templine, data,',') )
+	  {
+	    if(columns==0)
+            ptr->name = data;
+
+        else if(columns==1)
+            ptr->city = data;
+
+        else if(columns==2)
+            ptr->country = data;
+
+        else if(columns==3)
+            ptr->phone = data;
+
+        else if(columns==4)
+        {
+            double tempDbl = atof(data.c_str());
+            ptr->contribution = tempDbl;
+        }
+
+        else if(columns==5)
+        {
+            int tempInt = atoi(data.c_str());
+            ptr->id = tempInt;
+        }
+
+	    columns++;
+	  }
+
+	  rows++;
+	//  cout<<"row # "<< rows <<" input done "<< endl;
+
+	    ptr->next=NULL;
+        if(s.top!=NULL)
+            ptr->next= s.top;
+        s.top=ptr;
+
+	}
+/*
+	cout<<" --------------   ----------------"<< endl ;
+	s.show();
+	cout<<" --------------   ----------------"<< endl ;
+*/
+    file.close();
+
+
+    while(1)
+    {
+        cout<<"\n-----------------------------------------------------------";
+        cout<<"\n\t\t STACK USING LINKED LIST \n\n";
+        cout<<"1:PUSH\n2:POP\n3:DISPLAY STACK\n4:EXIT";
+        cout<<"\nEnter your choice(1-4): ";
+        int choice;
+        cin>>choice;
+        switch(choice)
+        {
+            case 1:
+                s.push();
+                break;
+            case 2:
+                s.pop();
+                break;
+            case 3:
+                s.show();
+                break;
+            case 4:
+                return 0;
+                break;
+            default:
+                cout<<"\nPlease enter correct choice(1-4)!!";
+                break;
+        }
+    }
+    return 0;
+}
